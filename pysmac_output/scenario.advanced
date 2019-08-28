@@ -1,0 +1,10 @@
+validation = False
+intensification-percentage = 0.5
+numPCA = 7
+rf-full-tree-bootstrap = False
+rf-ignore-conditionality = False
+rf-num-trees = 10
+skip-features = True
+console-log-level = OFF
+abort-on-first-run-crash = False
+runcount-limit = 100

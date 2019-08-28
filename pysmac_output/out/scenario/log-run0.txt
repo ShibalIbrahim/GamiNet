@@ -1,0 +1,519 @@
+10:06:46.736 [main] INFO  c.u.c.b.a.l.ComplexLoggingOptions - Logging to: /home/r7user1/zebin/interaction_detection/./pysmac_output/out/scenario/log-run0.txt
+10:06:46.757 [main] INFO  c.u.c.b.a.m.version.VersionTracker - Version of Algorithm Execution & Abstraction Toolkit is v2.10.03-master-814 (ebf4c8c913d5) 
+10:06:46.757 [main] INFO  c.u.c.b.a.m.version.VersionTracker - Version of Java Runtime Environment is OpenJDK 64-Bit Server VM (1.8.0_201) 
+10:06:46.757 [main] INFO  c.u.c.b.a.m.version.VersionTracker - Version of OS is Linux 3.10.0-862.14.4.el7.x86_64 (amd64) 
+10:06:46.757 [main] INFO  c.u.c.b.a.m.version.VersionTracker - Version of Random Forest Library is v1.10.01-master-120 (b68439c2c391) 
+10:06:46.757 [main] INFO  c.u.c.b.a.m.version.VersionTracker - Version of SMAC is v2.10.03-master-778 (3ee628ef9bf2) 
+10:06:46.760 [main] INFO  c.u.c.b.a.m.j.JCommanderHelper - Call String: smac --scenario-file ./pysmac_output/scenario.dat --tae IPC --ipc-mechanism TCP --ipc-remote-port 34393 --seed 0 "--validation " " False" "--intensification-percentage " " 0.5" "--numPCA " " 7" "--rf-full-tree-bootstrap " " False" "--rf-ignore-conditionality " " False" "--rf-num-trees " " 10" "--skip-features " " True" "--console-log-level " " OFF" "--abort-on-first-run-crash " " False" "--runcount-limit " " 100" 
+10:06:46.761 [main] INFO  c.u.c.b.smac.executors.SMACExecutor - ********** The next bit of output can be ignored, it is merely useful for debugging **********
+10:06:46.761 [main] INFO  c.u.c.b.smac.executors.SMACExecutor - ==========Enviroment Variables===========
+CLICOLOR=1
+CPATH=/usr/local/cuda/cudnnv7/include:/usr/local/cuda/cudnnv7/lib64:/usr/local/cuda/cudnnv7/include:/usr/local/cuda/cudnnv7/lib64:
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_HOME=/usr/local/cuda
+GIT_PAGER=cat
+HISTCONTROL=ignoredups
+HISTSIZE=1000
+HOME=/home/r7user1
+HOSTNAME=research07.saas.hku.hk
+JPY_PARENT_PID=15869
+KDEDIRS=/usr
+LANG=en_US.UTF-8
+LD_LIBRARY_PATH=/opt/anaconda3/lib:/home/r7user1/swig-3.0.12/bin:/usr/local/cuda/lib64:/usr/local/cuda/cudnnv7/include:/usr/local/cuda/cudnnv7/lib64:/usr/local/cuda/lib64:
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LIBRARY_PATH=/usr/local/cuda/cudnnv7/include:/usr/local/cuda/cudnnv7/lib64:/usr/local/cuda/lib64::/usr/local/cuda/cudnnv7/include:/usr/local/cuda/cudnnv7/lib64:/usr/local/cuda/lib64::
+LOGNAME=r7user1
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;05;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.axa=01;36:*.oga=01;36:*.spx=01;36:*.xspf=01;36:
+MAIL=/var/spool/mail/r7user1
+MPLBACKEND=module://ipykernel.pylab.backend_inline
+OLDPWD=/home/r7user1/zebin
+PAGER=cat
+PATH=/home/r7user1/anaconda2_local/bin:/home/r7user1/cmake/usr/local/bin:/opt/anaconda3/lib:/opt/rh/devtoolset-4/root/usr/bin/:/home/r7user1/swig-3.0.12/bin:/usr/local/cuda/lib64:/usr/local/cuda-9.0/bin:/home/r7user1/anaconda2_local/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/anaconda3/bin:/usr/local/cuda/bin::/home/r7user1/cmake/usr/local/bin:/opt/anaconda3/lib:/opt/rh/devtoolset-4/root/usr/bin/:/home/r7user1/swig-3.0.12/bin:/usr/local/cuda/lib64:/usr/local/cuda-9.0/bin:/home/r7user1/anaconda2_local/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/lib64/qt-3.3/bin:/opt/anaconda3/bin:/usr/local/cuda/bin::/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/r7user1/.local/bin:/home/r7user1/bin
+PWD=/home/r7user1
+QTDIR=/usr/lib64/qt-3.3
+QTINC=/usr/lib64/qt-3.3/include
+QTLIB=/usr/lib64/qt-3.3/lib
+QT_GRAPHICSSYSTEM_CHECKED=1
+QT_PLUGIN_PATH=/usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
+SELINUX_LEVEL_REQUESTED=
+SELINUX_ROLE_REQUESTED=
+SELINUX_USE_CURRENT_RANGE=
+SHELL=/bin/bash
+SHLVL=2
+SSH_CLIENT=10.68.251.158 64101 22
+SSH_CONNECTION=10.68.251.158 64101 147.8.212.195 22
+SSH_TTY=/dev/pts/3
+STY=15727.jupyter
+TERM=xterm-color
+TERMCAP=SC|screen|VT 100/ANSI X3.64 virtual terminal:\
+	:DO=\E[%dB:LE=\E[%dD:RI=\E[%dC:UP=\E[%dA:bs:bt=\E[Z:\
+	:cd=\E[J:ce=\E[K:cl=\E[H\E[J:cm=\E[%i%d;%dH:ct=\E[3g:\
+	:do=^J:nd=\E[C:pt:rc=\E8:rs=\Ec:sc=\E7:st=\EH:up=\EM:\
+	:le=^H:bl=^G:cr=^M:it#8:ho=\E[H:nw=\EE:ta=^I:is=\E)0:\
+	:li#33:co#167:am:xn:xv:LP:sr=\EM:al=\E[L:AL=\E[%dL:\
+	:cs=\E[%i%d;%dr:dl=\E[M:DL=\E[%dM:dc=\E[P:DC=\E[%dP:\
+	:im=\E[4h:ei=\E[4l:mi:IC=\E[%d@:ks=\E[?1h\E=:\
+	:ke=\E[?1l\E>:vi=\E[?25l:ve=\E[34h\E[?25h:vs=\E[34l:\
+	:ti=\E[?1049h:te=\E[?1049l:us=\E[4m:ue=\E[24m:so=\E[3m:\
+	:se=\E[23m:mb=\E[5m:md=\E[1m:mr=\E[7m:me=\E[m:ms:\
+	:Co#8:pa#64:AF=\E[3%dm:AB=\E[4%dm:op=\E[39;49m:AX:\
+	:vb=\Eg:G0:as=\E(0:ae=\E(B:\
+	:ac=\140\140aaffggjjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~..--++,,hhII00:\
+	:po=\E[5i:pf=\E[4i:Km=\E[M:k0=\E[10~:k1=\EOP:k2=\EOQ:\
+	:k3=\EOR:k4=\EOS:k5=\E[15~:k6=\E[17~:k7=\E[18~:\
+	:k8=\E[19~:k9=\E[20~:k;=\E[21~:F1=\E[23~:F2=\E[24~:\
+	:F3=\E[1;2P:F4=\E[1;2Q:F5=\E[1;2R:F6=\E[1;2S:\
+	:F7=\E[15;2~:F8=\E[17;2~:F9=\E[18;2~:FA=\E[19;2~:kb=:\
+	:K2=\EOE:kB=\E[Z:kF=\E[1;2B:kR=\E[1;2A:*4=\E[3;2~:\
+	:*7=\E[1;2F:#2=\E[1;2H:#3=\E[2;2~:#4=\E[1;2D:%c=\E[6;2~:\
+	:%e=\E[5;2~:%i=\E[1;2C:kh=\E[1~:@1=\E[1~:kH=\E[4~:\
+	:@7=\E[4~:kN=\E[6~:kP=\E[5~:kI=\E[2~:kD=\E[3~:ku=\EOA:\
+	:kd=\EOB:kr=\EOC:kl=\EOD:km:
+TZ=Asia/Hong_Kong
+USER=r7user1
+WINDOW=0
+XDG_DATA_DIRS=/home/r7user1/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share
+XDG_RUNTIME_DIR=/run/user/1001
+XDG_SESSION_ID=131833
+_=/home/r7user1/anaconda2_local/bin/jupyter
+__GLX_VENDOR_LIBRARY_NAME=nvidia
+
+10:06:46.762 [main] INFO  c.u.c.b.smac.executors.SMACExecutor - Hostname:research07.saas.hku.hk
+10:06:46.762 [main] INFO  c.u.c.b.smac.executors.SMACExecutor - ==========System Properties==============
+ERRLOG=/home/r7user1/zebin/interaction_detection/./pysmac_output/out/scenario/log-err0.txt
+NUMRUN=0
+OUTPUTDIR=/home/r7user1/zebin/interaction_detection/./pysmac_output/out/scenario
+ROOT-LEVEL=INFO
+RUNLOG=/home/r7user1/zebin/interaction_detection/./pysmac_output/out/scenario/log-run0.txt
+STDOUT-LEVEL=OFF
+WARNLOG=/home/r7user1/zebin/interaction_detection/./pysmac_output/out/scenario/log-warn0.txt
+awt.toolkit=sun.awt.X11.XToolkit
+file.encoding=UTF-8
+file.encoding.pkg=sun.io
+file.separator=/
+java.awt.graphicsenv=sun.awt.X11GraphicsEnvironment
+java.awt.printerjob=sun.print.PSPrinterJob
+java.class.path=/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/DomainInter.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/Jama-1.0.2.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/aeatk-src.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/aeatk.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/commons-collections-3.2.1-sources.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/commons-collections-3.2.1.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/commons-io-2.1.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/commons-math-2.2.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/commons-math3-3.3.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/exp4j-0.3.10.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/exp4j-0.4.3.BETA-3.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/fastrf-src.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/fastrf.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/guava-14.0.1.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/jackson-annotations-2.3.1.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/jackson-core-2.3.1.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/jackson-databind-2.3.1.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/jcip-annotations-src.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/jcip-annotations.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/jcommander.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/jmatharray.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/logback-access-1.1.2.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/logback-classic-1.1.2.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/logback-core-1.1.2.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/numerics4j-1.3.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/opencsv-2.3.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/slf4j-api-1.7.5.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/smac-src.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/smac.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/lib/spi-0.2.4.jar:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/conf:/home/r7user1/.local/lib/python3.6/site-packages/pysmac/smac/smac-v2.10.03-master-778/patches
+java.class.version=52.0
+java.endorsed.dirs=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/endorsed
+java.ext.dirs=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/ext:/usr/java/packages/lib/ext
+java.home=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre
+java.io.tmpdir=/tmp
+java.library.path=/opt/anaconda3/lib:/home/r7user1/swig-3.0.12/bin:/usr/local/cuda/lib64:/usr/local/cuda/cudnnv7/include:/usr/local/cuda/cudnnv7/lib64:/usr/local/cuda/lib64::/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+java.runtime.name=OpenJDK Runtime Environment
+java.runtime.version=1.8.0_201-b09
+java.specification.name=Java Platform API Specification
+java.specification.vendor=Oracle Corporation
+java.specification.version=1.8
+java.vendor=Oracle Corporation
+java.vendor.url=http://java.oracle.com/
+java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+java.version=1.8.0_201
+java.vm.info=mixed mode
+java.vm.name=OpenJDK 64-Bit Server VM
+java.vm.specification.name=Java Virtual Machine Specification
+java.vm.specification.vendor=Oracle Corporation
+java.vm.specification.version=1.8
+java.vm.vendor=Oracle Corporation
+java.vm.version=25.201-b09
+line.separator=
+
+logback.configurationFile=ca/ubc/cs/beta/aeatk/logging/complex-logback.xml
+os.arch=amd64
+os.name=Linux
+os.version=3.10.0-862.14.4.el7.x86_64
+path.separator=:
+sun.arch.data.model=64
+sun.boot.class.path=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/resources.jar:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/rt.jar:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/jsse.jar:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/jce.jar:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/charsets.jar:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/jfr.jar:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/classes
+sun.boot.library.path=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre/lib/amd64
+sun.cpu.endian=little
+sun.cpu.isalist=
+sun.io.unicode.encoding=UnicodeLittle
+sun.java.command=ca.ubc.cs.beta.smac.executors.SMACExecutor --scenario-file ./pysmac_output/scenario.dat --tae IPC --ipc-mechanism TCP --ipc-remote-port 34393 --seed 0 --validation   False --intensification-percentage   0.5 --numPCA   7 --rf-full-tree-bootstrap   False --rf-ignore-conditionality   False --rf-num-trees   10 --skip-features   True --console-log-level   OFF --abort-on-first-run-crash   False --runcount-limit   100
+sun.java.launcher=SUN_STANDARD
+sun.jnu.encoding=UTF-8
+sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+sun.os.patch.level=unknown
+user.country=US
+user.dir=/home/r7user1/zebin/interaction_detection
+user.home=/home/r7user1
+user.language=en
+user.name=r7user1
+user.timezone=Asia/Hong_Kong
+
+10:06:46.768 [main] INFO  c.u.c.b.a.m.j.JCommanderHelper - ==========Configuration Options==========
+[SMACOptions]
+ adaptiveCapping = false
+ alwaysRunInitialConfiguration = false
+ capAddSlack = 1.0
+ capSlack = 1.3
+classicInitModeOpts = [ClassicInitializationProcedureOptions]
+		 initialIncumbentRuns = 1
+
+dciModeOpts = [DoublingCappingInitializationProcedureOptions]
+		 numberOfChallengers = 2
+		 numberOfRunsPerChallenger = 2
+
+ucip = [UnbiasChallengerInitializationProcedureOptions]
+		 numberOfChallengers = 2
+		 numberOfRunsPerChallenger = 2
+		 cpulimit = 0
+
+ deterministicInstanceOrdering = false
+ doValidation = false
+ execMode = SMAC
+ experimentDir = /home/r7user1/zebin/interaction_detection/
+ expFunc = null
+help = [HelpOptions]
+		 showHiddenParameters = false
+		 showHelp = false
+		 helpLevel = BASIC
+		 showVersion = false
+		 helpDefaults = /home/r7user1/.aeatk/help.opt
+
+ initialChallengeRuns = 1
+ initialIncumbent = DEFAULT
+ initializationMode = CLASSIC
+ intensificationPercentage = 0.5
+ initialChallengers = []
+ initialChallengersIntensificationTime = 2147483647
+ iterativeCappingBreakOnFirstCompletion = false
+ iterativeCappingK = 1
+logOptions = [ComplexLoggingOptions]
+		 consoleLogLevel = OFF
+		 logLevel = INFO
+
+ maxIncumbentRuns = 2000
+mbOptions = [ModelBuildingOptions]
+		 maskCensoredDataAsKappaMax = false
+		 maskInactiveConditionalParametersAsDefaultValue = true
+		 maskCensoredDataAsUncensored = false
+		 imputationIterations = 2
+
+ modelHashCodeFile = null
+ numberOfChallengers = 10
+ numberOfRandomConfigsInEI = 10000
+ numberOfRandomConfigsUsedForLocalSearch = 0
+ numPCA = 7
+ optionFile = null
+ optionFile2 = null
+randomForestOptions = [RandomForestOptions]
+		 brokenVarianceCalculation = false
+		 freeMemoryPercentageToSubsample = 0.25
+		 fullTreeBootstrap = false
+		 ignoreConditionality = false
+		 imputeMean = false
+		 logModel = false
+		 minVariance = 1.0E-14
+		 numTrees = 10
+		 penalizeImputedValues = false
+		 preprocessMarginal = true
+		 ratioFeatures = 0.8333333333333334
+		 shuffleImputedValues = false
+		 splitMin = 10
+		 storeDataInLeaves = false
+		 subsamplePercentage = 0.9
+		 subsampleValuesWhenLowMemory = false
+
+runGroupOptions = [RunGroupOptions]
+		 runGroupName = %SCENARIO_NAME
+		 runGroupExit = false
+		 replacementChar = %
+
+scenarioConfig = [ScenarioOptions]
+		 _runObj = QUALITY
+		 intraInstanceObj = MEAN
+		 interInstanceObj = MEAN
+		limitOptions = [TerminationCriteriaOptions]
+				 tunerTimeout = 2147483647
+				 numIterations = 2147483647
+				 runtimeLimit = 2147483647
+				 totalNumRunsLimit = 100
+				 countSMACTimeAsTunerTime = true
+				 challengeIncumbentAttempts = 1000
+				 fileToWatch = null
+
+		instanceOptions = [ProblemInstanceOptions]
+				 instanceFile = ./pysmac_output/instances.dat
+				 instanceFeatureFile = null
+				 testInstanceFile = null
+				 checkInstanceFilesExist = false
+				 useInstances = true
+				 instanceSuffix = null
+				 testInstanceSuffix = null
+				 ignoreFeatures = true
+
+		 scenarioFile = /home/r7user1/zebin/interaction_detection/./pysmac_output/scenario.dat
+		 outputDirectory = ./pysmac_output/out
+		 invalidScenarioReason = null
+		algoExecOptions = [AlgorithmExecutionOptions]
+				 algoExec = echo 0
+				 algoExecDir = ./pysmac_output
+				 deterministic = true
+				 cutoffTime = 3600.0
+				 cutoffLength = -1.0
+				 additionalContext = {}
+				taeOpts = [TargetAlgorithmEvaluatorOptions]
+						 targetAlgorithmEvaluator = IPC
+						 abortOnCrash = false
+						 abortOnFirstRunCrash = false
+						 retryCount = 0
+						 cacheRuns = false
+						 cacheDebug = false
+						 useDynamicCappingExclusively = false
+						 reportStrictlyIncreasingRuntimes = false
+						 boundRuns = false
+						 maxConcurrentAlgoExecs = 1
+						 exitOnFailure = false
+						 runHashCodeFile = null
+						 leakMemory = false
+						 leakMemoryAmount = 1024
+						 verifySAT = null
+						 checkSATConsistency = true
+						 checkSATConsistencyException = true
+						 callObserverBeforeCompletion = true
+						prePostOptions = [PrePostCommandOptions]
+								 preCommand = null
+								 postCommand = null
+								 exceptionOnError = false
+								 logOutput = true
+								 directory = /home/r7user1/zebin/interaction_detection/.
+
+						 checkResultOrderConsistent = false
+						 skipOutstandingEvaluationsTAE = false
+						 logRequestResponses = false
+						 logRequestResponsesRCOnly = false
+						 trackRunsScheduled = false
+						 trackRunsScheduledResolution = 1.0
+						 uncleanShutdownCheck = true
+						 killCaptimeExceedingRun = true
+						 killCaptimeExceedingRunFactor = 10.0
+						 checkRunConfigsUnique = true
+						 checkRunConfigsUniqueException = true
+						 observeWalltimeIfNoRuntime = true
+						 observeWalltimeScale = 0.95
+						 observeWalltimeDelay = 5.0
+						 synchronousObserver = true
+						 taeDefaults = /home/r7user1/.aeatk/tae.opt
+						ttaedo = [TransformTargetAlgorithmEvaluatorDecoratorOptions]
+								 transform = false
+								 transformValidValuesOnly = true
+								 SAT_runtime_transform = R
+								 SAT_quality_transform = Q
+								 UNSAT_runtime_transform = R
+								 UNSAT_quality_transform = Q
+								 TIMEOUT_runtime_transform = R
+								 TIMEOUT_quality_transform = Q
+								 other_runtime_transform = R
+								 other_quality_transform = Q
+
+						tForkOptions = [ForkingTargetAlgorithmEvaluatorDecoratorOptions]
+								 forkToTAE = null
+								fPolicyOptions = [ForkingTargetAlgorithmEvaluatorDecoratorPolicyOptions]
+										 fPolicy = null
+										 duplicateOnSlaveQuickTimeout = 5
+
+
+						 fileToWatch = null
+						 warnIfNoResponseFromTAE = 120
+						 taeStopProcessingOnShutdown = true
+						 filecache = false
+						 fileCacheSource = /home/r7user1/zebin/interaction_detection/./runcache
+						 fileCacheOutput = /home/r7user1/zebin/interaction_detection/./runcache
+						 fileCacheCrashOnMiss = false
+						 transformCrashedQuality = true
+						 transformCrashedQualityValue = 1.0E9
+						 filterZeroCutoffRuns = true
+
+				paramFileDelegate = [ParamConfigurationSpaceOptions]
+						 paramFile = ./pysmac_output/parameters.pcs
+						 searchSubspace = null
+						 searchSubspaceFile = null
+						 continuousNeighbours = 4
+
+
+
+seedOptions = [SeedOptions]
+		 seedOffset = 0
+		 numRun = 0
+		 initialSeedMap = {}
+
+ smacDefaults = /home/r7user1/.aeatk/smac.opt
+stateOpts = [StateFactoryOptions]
+		 stateSerializer = LEGACY
+		 statedeSerializer = LEGACY
+		 restoreStateFrom = null
+		 restoreIteration = null
+		 restoreScenario = null
+		 cleanOldStatesOnSuccess = true
+		 saveContextWithState = true
+
+trackingOptions = [ParamConfigurationOriginTrackingOptions]
+		 configTracking = false
+
+validationOptions = [ValidationOptions]
+		 maxTimestamp = -1.0
+		 minTimestamp = 0.0
+		 multFactor = 2.0
+		 numberOfTestInstances = 2147483647
+		 numberOfTestSeedsPerInstance = 1000
+		 numberOfValidationRuns = 1
+		 outputFileSuffix = 
+		 saveStateFile = false
+		 useWallClockTime = true
+		 validateAll = false
+		 validateOnlyIfTunerTimeReached = 0.0
+		 validateOnlyIfWallTimeReached = 0.0
+		 validateOnlyLastIncumbent = true
+		 validationHeaders = true
+		 validationRoundingMode = UP
+
+warmStartOptions = [WarmStartOptions]
+		 warmStartStateFrom = null
+		 restoreIteration = 2147483647
+
+ validationSeed = 0
+ saveRunsEveryIteration = false
+ stateQuickSaves = true
+ shutdownTAEWhenDone = true
+ validationCores = null
+ shareModelMode = false
+ shareRunDataFrequency = 300
+ shareModeModeTAE = true
+ writeRunData = true
+ defaultHandler = USE_ALL
+ sharedModeModeAssymetricMode = false
+
+[AnalyticTargetAlgorithmEvaluatorOptions]
+ simulateDelay = false
+ cores = 0
+ observerFrequency = 100
+ func = CAMELBACK
+ scaleDelay = 1.0
+
+[BlackHoleTargetAlgorithmEvaluatorOptions]
+ warnings = true
+
+[CommandLineTargetAlgorithmEvaluatorOptions]
+ observerFrequency = 500
+ concurrentExecution = true
+ cores = 1
+ logAllCallStrings = false
+ logAllResultLines = false
+ logAllCallsAndResultLines = false
+ logAllProcessOutput = false
+ listenForUpdates = true
+ paramArgumentsContainQuotes = false
+ pgEnvKillCommand = null
+ pgNiceKillCommand = bash -c "kill -s TERM -%pid"
+ pgForceKillCommand = bash -c "kill -s KILL -%pid"
+ procNiceKillCommand = kill -s TERM %pid
+ procForceKillCommand = kill -s KILL %pid
+ smacDefaults = /home/r7user1/.aeatk/cli-tae.opt
+
+[ConstantTargetAlgorithmEvaluatorOptions]
+ runResult = SAT
+ runtime = 1.0
+ quality = 0.0
+ runlength = 0.0
+ additionalRunData = 
+
+[IPCTargetAlgorithmEvaluatorOptions]
+ persistent = false
+ ipcMechanism = TCP
+ encodingMechanism = CALL_STRING
+ remoteHost = 127.0.0.1
+ remotePort = 34393
+ udpPacketSize = 4096
+ localPort = 0
+ execScript = null
+ execScriptOutput = false
+ poolConnections = false
+ ipcDefaults = /home/r7user1/.aeatk/ipc-tae.opt
+ asyncThreads = 65
+
+[PreloadedResponseTargetAlgorithmEvaluatorOptions]
+ preloadedResponses = 
+ runLength = -1.0
+ quality = 0.0
+ additionalRunData = 
+
+[RandomResponseTargetAlgorithmEvaluatorOptions]
+ simulateDelay = false
+ additionalRunData = 
+ cores = 0
+ maxResponse = 10.0
+ minResponse = 0.0
+ observerFrequency = 500
+ trendCoefficient = 0.0
+ seed = 1566353205694
+ persistent = false
+ scaleDelay = 1.0
+
+
+10:06:46.906 [main] INFO  c.u.c.b.a.s.l.LegacyStateFactory - Found previous run data in state output folder: /home/r7user1/zebin/interaction_detection/./pysmac_output/out/scenario , renamed to: old-state-state-run0-1566353206906
+10:06:46.927 [main] INFO  c.u.c.b.a.t.b.i.IPCTargetAlgorithmEvaluator - Target Algorithm Evaluator making TCP connections to 127.0.0.1:34393.
+10:06:47.359 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - SMAC started at: Aug 21, 2019 10:06:47 AM. Minimizing mean quality.
+10:06:47.890 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - First incumbent: config 1 (internal ID: 0x000F), with mean quality: 46.853445861412546; estimate based on 1 runs.
+10:06:47.909 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 1 (internal ID: 0x000F): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '1.0' -x2 '-1.0' -x3 '1'  
+10:06:48.794 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Incumbent changed to: config 2 (internal ID: 0x3689), with mean quality: 17.878246557899537; estimate based on 1 runs.
+10:06:48.795 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 2 (internal ID: 0x3689): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '2.311453961656184' -x2 '0.49000855776817254' -x3 '8'  
+10:06:49.819 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Incumbent changed to: config 6 (internal ID: 0x40CD), with mean quality: 15.381083272117985; estimate based on 1 runs.
+10:06:49.819 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 6 (internal ID: 0x40CD): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '4.309575862948023' -x2 '3.0050146916221188' -x3 '7'  
+10:06:54.177 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Incumbent changed to: config 20 (internal ID: 0x3737B), with mean quality: 12.54231382022624; estimate based on 1 runs.
+10:06:54.177 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 20 (internal ID: 0x3737B): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '3.768089055223845' -x2 '1.270682970876992' -x3 '10'  
+10:06:57.105 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Incumbent changed to: config 29 (internal ID: 0x58A0E), with mean quality: 12.156572841118724; estimate based on 1 runs.
+10:06:57.105 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 29 (internal ID: 0x58A0E): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '3.5577956976976175' -x2 '3.3652632524094948' -x3 '9'  
+10:07:02.992 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Incumbent changed to: config 46 (internal ID: 0x97CF9), with mean quality: 8.989656544963193; estimate based on 1 runs.
+10:07:02.992 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 46 (internal ID: 0x97CF9): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '2.177779352332938' -x2 '4.357685687981013' -x3 '3'  
+10:07:10.455 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Incumbent changed to: config 65 (internal ID: 0xDDE59), with mean quality: 6.025413922975046; estimate based on 1 runs.
+10:07:10.456 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 65 (internal ID: 0xDDE59): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '3.83237401069848' -x2 '1.1450712500313296' -x3 '3'  
+10:07:16.941 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Incumbent changed to: config 83 (internal ID: 0x1208E0), with mean quality: 1.965494925045265; estimate based on 1 runs.
+10:07:16.942 [main] INFO  c.u.c.b.s.c.SequentialModelBasedAlgorithmConfiguration - Sample call for new incumbent config 83 (internal ID: 0x1208E0): 
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '3.335898907238608' -x2 '1.506321992574465' -x3 '1'  
+10:07:23.060 [main] INFO  c.u.c.b.a.e.h.LogRuntimeStatistics - *****Developer Statistics*****
+ Count: 49
+ Incumbent ID: 83 (internal ID:0x1208E0)
+ Number of PISPs for Incumbent: 1
+ Number of Instances for Incumbent: 1
+ Number of Configurations Run: 100
+ Performance of the Incumbent: 1.965
+ Configuration Time Budget used: 305.83 s (0%)
+ Configuration Time Budget remaining: 2.15E9 s
+ Wall-clock Time Budget used: 35.70 s (0%)
+ Wall-clock Time Budget remaining: 2.15E9 s
+ Algorithm Runs used: 100.00  (100%)
+ Algorithm Runs remaining: 0.00 
+ Model/Iteration used: 48.00  (0%)
+ Model/Iteration remaining: 2.15E9 
+ Sum of Target Algorithm Execution Times (treating minimum value as 0.1): 301.309 s
+ CPU time of Configurator: 4.517 s
+ User time of Configurator: 4.516 s
+ Outstanding Runs on Target Algorithm Evaluator: 0
+ Outstanding Requests on Target Algorithm Evaluator: 0
+ Total Reported Algorithm Runtime: 301.269 s
+ Sum of Measured Wallclock Runtime: 27.673 s
+ Max Memory: 27305 MB
+ Total Java Memory: 1963 MB
+ Free Java Memory: 1653 MB
+ * PISP count is roughly the number of runs, but doesn't included redundant runs on the same problem instance & seed
+10:07:23.062 [main] INFO  c.u.c.b.smac.executors.SMACExecutor - 
+=======================================================================================
+SMAC has finished. Reason: algorithm run limit (100 runs) has been reached.   
+Total number of runs performed: 100, total configurations tried: 100.
+Total CPU time used: 306 s, total wallclock time used: 36 s.
+SMAC's final incumbent: config 83 (internal ID: 0x1208E0), with estimated mean quality: 1.965494925045265, based on 1 run(s) on 1 training instance(s).
+Sample call for this final incumbent:
+cd /home/r7user1/zebin/interaction_detection/./pysmac_output; echo 0 id_0 0 3600.0 2147483647 -1 -x1 '3.335898907238608' -x2 '1.506321992574465' -x3 '1'
+=======================================================================================
+10:07:23.064 [main] INFO  c.u.c.b.smac.executors.SMACExecutor - 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Additional information about run 0 in:/home/r7user1/zebin/interaction_detection/./pysmac_output/out/scenario
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
