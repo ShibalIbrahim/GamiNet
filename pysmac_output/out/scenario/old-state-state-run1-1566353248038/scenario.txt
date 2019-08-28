@@ -1,9 +1,0 @@
-algo-exec = echo 0
-run-obj = QUALITY
-cutoff_time = 3600
-pcs-file = ./pysmac_output/parameters.pcs
-instances = ./pysmac_output/instances.dat
-algo-exec-dir = ./pysmac_output
-output-dir = ./pysmac_output/out
-overall_obj = MEAN
-algo-deterministic = True
