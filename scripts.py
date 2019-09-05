@@ -18,10 +18,10 @@ from metrics import *
 
 repeat_num = 10
 num_cores = 10
-task_list = {#"simu1": {"loader":data_generator1, "task_group":"simulation", "metric":mse},
-         #"simu2": {"loader":data_generator2, "task_group":"simulation", "metric":mse},
-         #"wine": {"loader":load_wine, "task_group":"real_data", "metric":mse},
-         #"concrete": {"loader":load_concrete, "task_group":"real_data", "metric":mse},
+task_list = {"simu1": {"loader":data_generator1, "task_group":"simulation", "metric":mse},
+         "simu2": {"loader":data_generator2, "task_group":"simulation", "metric":mse},
+         "wine": {"loader":load_wine, "task_group":"real_data", "metric":mse},
+         "concrete": {"loader":load_concrete, "task_group":"real_data", "metric":mse},
          "parkinsons": {"loader":load_parkinsons, "task_group":"real_data", "metric":mse},
          "skill_craft": {"loader":load_skill_craft, "task_group":"real_data", "metric":mse},
          "magic": {"loader":load_magic, "task_group":"real_data", "metric":auc}, 
@@ -37,19 +37,25 @@ def batch_parallel(method, task_group, folder, data_loader, metric, rand_seed):
         train_x, test_x, train_y, test_y, task_type, meta_info = data_loader(path="./data/", test_ratio=0.2, rand_seed=rand_seed)
 
     if method == "GAMINet":
-        tf.random.set_seed(rand_seed)
-        model = GAMINet(input_num=train_x.shape[1], meta_info=meta_info, interact_num=10, interact_arch=[20, 10],
+        val_metric = np.inf
+        for i in range(5):
+            model = GAMINet(input_num=train_x.shape[1], meta_info=meta_info, interact_num=10, interact_arch=[20, 10],
                    subnet_arch=[20, 10], task_type=task_type, activation_func=tf.tanh, batch_size=min(1000, int(round(0.2*train_x.shape[0]))), 
                    lr_bp=0.001, beta_threshold=0.05, init_training_epochs=2000, interact_training_epochs=2000, tuning_epochs=500,
-                   l1_subnet=0.001, l1_inter=0.001, verbose=False, val_ratio=0.2, early_stop_thres=50)
-        model.fit(train_x, train_y)
-        model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True) 
-        pred_train = model.predict(train_x)
-        pred_test = model.predict(test_x)
+                   l1_subnet=10**(-1 - i), l1_inter=10**(-1 - i), verbose=False, val_ratio=0.2, early_stop_thres=50, random_state=rand_seed)
+            model.fit(train_x, train_y)
+            pred_val = model.predict(model.val_x)
+            if val_metric > np.round(metric(model.val_y, pred_val, sy), 5):
+                val_metric = np.round(metric(model.val_y, pred_val, sy), 5)
+                tr_y = model.tr_y
+                val_y = model.val_y
+                pred_train = model.predict(model.tr_x)
+                pred_test = model.predict(test_x)
+                model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True) 
 
     elif method == "EBM":
         pred_train, pred_test, ebm_clf = ebm(train_x, train_y, test_x, task_type=task_type, meta_info=meta_info, rand_seed=rand_seed)
-        ebm_visualize(ebm_clf, meta_info, folder + "/ebm/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=3, save_png=True, save_eps=True)
+        ebm_visualize(ebm_clf, meta_info, folder + "/ebm/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True)
         
     elif method == "Rulefit":
         pred_train, pred_test = rulefit(train_x, train_y, test_x, task_type=task_type, meta_info=meta_info, rand_seed=rand_seed)
@@ -87,35 +93,35 @@ for task_name, item in task_list.items():
     np.save(folder + 'gaminet_stat.npy', gaminet_stat)
     print("GAMINet Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
-    stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("EBM", task_group, folder,
-                                           data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
-    ebm_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
-    np.save(folder + 'ebm_stat.npy', ebm_stat)
-    print("EBM Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
+#     stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("EBM", task_group, folder,
+#                                            data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
+#     ebm_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
+#     np.save(folder + 'ebm_stat.npy', ebm_stat)
+#     print("EBM Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
-    stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("Rulefit", task_group, folder,
-                                           data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
-    rulefit_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
-    np.save(folder + 'rulefit_stat.npy', rulefit_stat)
-    print("Rulefit Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
+#     stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("Rulefit", task_group, folder,
+#                                            data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
+#     rulefit_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
+#     np.save(folder + 'rulefit_stat.npy', rulefit_stat)
+#     print("Rulefit Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
-    stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("Hiernet", task_group, folder,
-                                           data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
-    hiernet_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
-    np.save(folder + 'hiernet_stat.npy', hiernet_stat)
-    print("HierNet Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
+#     stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("Hiernet", task_group, folder,
+#                                            data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
+#     hiernet_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
+#     np.save(folder + 'hiernet_stat.npy', hiernet_stat)
+#     print("HierNet Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
-    stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("MLP", task_group, folder,
-                                           data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
-    mlp_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
-    np.save(folder + 'mlp_stat.npy', mlp_stat)
-    print("MLP Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
+#     stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("MLP", task_group, folder,
+#                                            data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
+#     mlp_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
+#     np.save(folder + 'mlp_stat.npy', mlp_stat)
+#     print("MLP Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
-    stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("RF", task_group, folder,
-                                           data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
-    rf_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
-    np.save(folder + 'rf_stat.npy', rf_stat)
-    print("RF Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
+#     stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("RF", task_group, folder,
+#                                            data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
+#     rf_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
+#     np.save(folder + 'rf_stat.npy', rf_stat)
+#     print("RF Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
     gaminet_stat = np.load(folder + 'gaminet_stat.npy')
     ebm_stat = np.load(folder + 'ebm_stat.npy')
