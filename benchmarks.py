@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import matplotlib.gridspec as gridspec
 
 from sklearn.neural_network import MLPRegressor
 from sklearn.neural_network import MLPClassifier
@@ -52,14 +53,12 @@ def preprocessing(train_x, test_x, meta_info):
     return new_train, new_test
            
     
-def ebm_visualize(ebm_clf, meta_info, folder="./results/", name="demo", cols_per_row=3, main_density = 3, save_eps=False):  
+def ebm_visualize(ebm_clf, meta_info, folder="./results/", name="demo", cols_per_row=3, save_png=False, save_eps=False):  
     
     if not os.path.exists(folder):
         os.makedirs(folder)
     save_path = folder + name
 
-    idx = 0
-    cols_per_row = 3
     categ_variable_list = []
     noncateg_variable_list = []
     for i, (key, item) in enumerate(meta_info.items()):
@@ -72,152 +71,139 @@ def ebm_visualize(ebm_clf, meta_info, folder="./results/", name="demo", cols_per
 
     ebm_global = ebm_clf.explain_global()
     max_ids = len(ebm_global.feature_names)
-    f = plt.figure(figsize=(6 * cols_per_row, int(max_ids * 6 / cols_per_row)))
+    fig = plt.figure(figsize=(6 * cols_per_row - 2, 
+                      4.6 * int(np.ceil(max_ids / cols_per_row))))
+    outer = gridspec.GridSpec(int(np.ceil(max_ids/cols_per_row)), cols_per_row, wspace=0.25, hspace=0.25)
     for indice in range(max_ids):
 
         data_dict = ebm_global.data(indice)
         feature_name = ebm_global.feature_names[indice]
         feature_type = ebm_global.feature_types[indice]
-
-        if feature_type == "continuous":
-            
-            ax1 = plt.subplot2grid((main_density * int(np.ceil(max_ids/cols_per_row)), cols_per_row),
-                            (main_density * int(idx/cols_per_row), idx%cols_per_row), 
-                            rowspan=main_density - 1)
-            
-            sx = meta_info[feature_name]["scaler"]
-            subnets_inputs = np.array(data_dict['names']).reshape([-1, 1])
-            subnets_inputs_real = sx.inverse_transform(subnets_inputs)
-            x_tick_loc = np.linspace(int(len(subnets_inputs) * 0.1), int(len(subnets_inputs) * 0.9), 5).reshape([-1, 1]).astype(int)
-                                           
-            x_tick_values = subnets_inputs_real[x_tick_loc].ravel()
-            if (np.max(x_tick_values) - np.min(x_tick_values)) < 0.01:
-                x_tick_values = np.array([np.format_float_scientific(x_tick_values[i], precision=1) for i in range(x_tick_values.shape[0])])
-            elif (np.max(x_tick_values) - np.min(x_tick_values)) < 10:
-                x_tick_values = np.round(x_tick_values, 2)
-            elif (np.max(x_tick_values) - np.min(x_tick_values)) < 1000:
-                x_tick_values = np.round(x_tick_values).astype(int)
-            else:
-                x_tick_values = np.array([np.format_float_scientific(x_tick_values[i], precision=1) for i in range(x_tick_values.shape[0])])
-
         
-            ax1.errorbar(subnets_inputs_real, data_dict['scores'], ecolor="gray",
-                     yerr=np.array(data_dict['upper_bounds']) - np.array(data_dict['scores']))
-            plt.xticks(subnets_inputs_real[x_tick_loc].ravel(), x_tick_values.ravel(), fontsize=10)
-            ax1.set_ylabel("Score", fontsize=12)
-            
-            ax2 = plt.subplot2grid((main_density * int(np.ceil(max_ids/cols_per_row)), cols_per_row),
-                            (main_density * int(idx/cols_per_row) + main_density - 1, idx%cols_per_row))
+        if feature_type == "continuous":
 
-            xint = sx.inverse_transform(np.reshape((np.array(data_dict['density']['names'][1:])
-                                       + np.array(data_dict['density']['names'][:-1]))/2, [-1,1])).reshape([-1])
-            ax2.bar(xint,data_dict['density']['scores'], width=xint[1]-xint[0])
-            ax2.set_ylabel("Density", fontsize=12)
-            
+            sx = meta_info[feature_name]['scaler']
+            subnets_inputs = np.array(data_dict['names']).reshape([-1, 1])
+            inner = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=outer[indice], wspace=0.1, hspace=0.1, height_ratios=[4, 1])
+            ax1 = plt.Subplot(fig, inner[0]) 
+            ax1.plot(sx.inverse_transform(subnets_inputs), data_dict['scores'])
+            ax1.fill(np.concatenate([sx.inverse_transform(subnets_inputs), sx.inverse_transform(subnets_inputs)[::-1]]),
+                             np.concatenate([np.array(data_dict['lower_bounds']), 
+                           np.array(data_dict['upper_bounds'])[::-1]]), alpha=.5)
+            ax1.set_ylabel("Score", fontsize=12)
+            ax1.get_yaxis().set_label_coords(-0.15, 0.5)
+            ax1.set_title(feature_name, fontsize=12)
+            fig.add_subplot(ax1)
+
+            ax2 = plt.Subplot(fig, inner[1]) 
+            xint = sx.inverse_transform(((np.array(data_dict['density']['names'][1:]) 
+                                          + np.array(data_dict['density']['names'][:-1]))/2).reshape([-1, 1])).reshape([-1])
+            ax2.bar(xint, data_dict['density']['scores'], width=xint[1]-xint[0])
+            ax1.get_shared_x_axes().join(ax1, ax2)
+            ax1.set_xticklabels([])
+            ax2.set_ylabel("Histogram", fontsize=12)
+            ax2.get_yaxis().set_label_coords(-0.15, 0.5)
+            if np.max([len(str(int(ax1.get_yticks()[i]) if (ax2.get_yticks()[i] - int(ax2.get_yticks()[i])) < 0.001 
+                               else ax1.get_yticks()[i].round(5))) for i in range(len(ax2.get_yticks()))]) > 5:
+                ax1.yaxis.set_tick_params(rotation=20)
+            if np.max([len(str(int(ax2.get_xticks()[i]) if (ax2.get_xticks()[i] - int(ax2.get_xticks()[i])) < 0.001 
+                               else ax2.get_xticks()[i].round(5))) for i in range(len(ax2.get_xticks()))]) > 5:
+                ax2.xaxis.set_tick_params(rotation=20)
+            if np.max([len(str(int(ax2.get_yticks()[i]))) for i in range(len(ax2.get_yticks()))]) > 5:
+                ax2.yaxis.set_tick_params(rotation=20)
+            fig.add_subplot(ax2)
+
         elif feature_type == "categorical":
-            
-            ax1 = plt.subplot2grid((main_density * int(np.ceil(max_ids/cols_per_row)), cols_per_row),
-                            (main_density * int(idx/cols_per_row), idx%cols_per_row), 
-                            rowspan=main_density - 1)
 
-            values = data_dict['scores']
-            values_num = len(data_dict['scores'])
-            ax1.bar(np.arange(values_num), data_dict['scores'])
-            plt.xticks(np.arange(values_num), meta_info[feature_name]["values"])
+            inner = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=outer[indice], wspace=0.1, hspace=0.1, height_ratios=[4, 1])
+            ax1 = plt.Subplot(fig, inner[0]) 
+            ax1.bar(np.arange(len(data_dict['scores'])), data_dict['scores'], ecolor='black', capsize=10,
+                  yerr=(np.array(data_dict['upper_bounds']) - np.array(data_dict['lower_bounds'])) / 2)
             ax1.set_ylabel("Score", fontsize=12)
-            
-            ax2 = plt.subplot2grid((main_density * int(np.ceil(max_ids/cols_per_row)), cols_per_row),
-                            (main_density * int(idx/cols_per_row) + main_density - 1, idx%cols_per_row))
+            ax1.get_yaxis().set_label_coords(-0.15, 0.5)
+            ax1.set_title(feature_name, fontsize=12)
+            fig.add_subplot(ax1)
 
-            unique, counts = np.unique(self.tr_x[:, 
-                              self.categ_index_list[indice - self.numerical_input_num]], return_counts=True)
-            ax2.bar(np.arange(len(meta_info[feature_name]['values'])), counts)
-            plt.xticks(np.arange(len(meta_info[feature_name]['values'])), 
-                    meta_info[feature_name]['values'])
-            ax2.set_ylabel("Density", fontsize=12)
+            ax2 = plt.Subplot(fig, inner[1]) 
+            ax2.bar(np.arange(len(meta_info[feature_name]['values'])), data_dict['density']['scores'])
+            ax1.get_shared_x_axes().join(ax1, ax2)
+            ax1.set_xticklabels([])
+            ax2.set_xticks(np.arange(len(data_dict['scores'])))
+            ax2.set_xticklabels(meta_info[feature_name]["values"])
+            ax2.set_ylabel("Histogram", fontsize=12)
+            ax2.get_yaxis().set_label_coords(-0.15, 0.5)
+            if np.max([len(str(int(ax1.get_yticks()[i]) if (ax2.get_yticks()[i] - int(ax2.get_yticks()[i])) < 0.001 
+                               else ax1.get_yticks()[i].round(5))) for i in range(len(ax2.get_yticks()))]) > 5:
+                ax1.yaxis.set_tick_params(rotation=20)
+            if np.max([len(str(int(ax2.get_xticks()[i]) if (ax2.get_xticks()[i] - int(ax2.get_xticks()[i])) < 0.001 
+                               else ax2.get_xticks()[i].round(5))) for i in range(len(ax2.get_xticks()))]) > 5:
+                ax2.xaxis.set_tick_params(rotation=20)
+            if np.max([len(str(int(ax2.get_yticks()[i]))) for i in range(len(ax2.get_yticks()))]) > 5:
+                ax2.yaxis.set_tick_params(rotation=20)
+            fig.add_subplot(ax2)
 
         elif feature_type == "pairwise":
-                        
-            ax1 = plt.subplot2grid((main_density * int(np.ceil(max_ids/cols_per_row)), cols_per_row),
-                            (main_density * int(idx/cols_per_row), idx%cols_per_row), 
-                            rowspan=main_density)
 
             response = data_dict['scores'].T[::-1]
-
             feature_name1 = feature_name.split(" x ")[0]
             feature_name2 = feature_name.split(" x ")[1]
-            depth1, depth2 = data_dict['scores'].shape
-            if (feature_name1 in categ_variable_list) & (feature_name2 not in categ_variable_list):
-                
-                sx2 = meta_info[feature_name.split(" x ")[1]]["scaler"]
-                x1_tick_loc = np.arange(depth1)
-                x2_tick_loc = np.round(np.linspace(1, data_dict['scores'].shape[1] - 1, 6)).astype(int)
-                x1_real_values = np.array(meta_info[feature_name1]["values"])[x1_tick_loc].tolist()
-                x2_real_values = sx2.inverse_transform(np.array(data_dict['right_names'])[x2_tick_loc].reshape([-1, 1])).ravel()[::-1]
-
-            elif (feature_name1 not in categ_variable_list) & (feature_name2 in categ_variable_list):
-                
-                sx1 = meta_info[feature_name.split(" x ")[0]]["scaler"]
-                x1_tick_loc = np.round(np.linspace(1, data_dict['scores'].shape[0] - 1, 6)).astype(int)
-                x2_tick_loc = np.arange(depth2) 
-                x1_real_values = sx1.inverse_transform(np.array(data_dict['left_names'])[x1_tick_loc].reshape([-1, 1])).ravel()
-                x2_real_values = np.array(meta_info[feature_name2]["values"])[x2_tick_loc].tolist()[::-1]
-
-            elif (feature_name1 in categ_variable_list) & (feature_name2 in categ_variable_list):
-
-                x1_tick_loc = np.arange(depth1)
-                x2_tick_loc = np.arange(depth2)
-                x1_real_values = np.array(meta_info[feature_name1]["values"])[x1_tick_loc].tolist()
-                x2_real_values = np.array(meta_info[feature_name2]["values"])[x2_tick_loc].tolist()[::-1]
-
+            
+            axis_extent = []
+            interact_input_list = []
+            if feature_name1 in categ_variable_list:
+                interact_label1 = meta_info[feature_name1]['values']
+                length1 = len(interact_label1)
+                interact_input1 = np.array(np.arange(length1), dtype=np.float32)
+                interact_input_list.append(interact_input1)
+                axis_extent.extend([-0.5, length1 - 0.5])
             else:
-                sx1 = meta_info[feature_name1]["scaler"]
-                sx2 = meta_info[feature_name2]["scaler"]
+                sx1 = meta_info[feature_name1]['scaler']    
+                interact_input_list.append(np.array(np.linspace(-1, 1, 101), dtype=np.float32))
+                interact_label1 = sx1.inverse_transform(np.array([-1, 1], dtype=np.float32).reshape([-1, 1])).ravel()
+                axis_extent.extend([interact_label1.min(), interact_label1.max()])
+            if feature_name2 in categ_variable_list:
+                interact_label2 = meta_info[feature_name2]['values']
+                length2 = len(interact_label2)
+                interact_input2 = np.array(np.arange(length2), dtype=np.float32)
+                interact_input_list.append(interact_input2)
+                axis_extent.extend([-0.5, length2 - 0.5])
+            else:
+                sx2 = meta_info[feature_name2]['scaler']  
+                interact_input_list.append(np.array(np.linspace(-1, 1, 101), dtype=np.float32))
+                interact_label2 = sx2.inverse_transform(np.array([-1, 1], dtype=np.float32).reshape([-1, 1])).ravel()
+                axis_extent.extend([interact_label2.min(), interact_label2.max()])
 
-                x1_tick_loc = np.round(np.linspace(1, data_dict['scores'].shape[0] - 1, 6)).astype(int)
-                x2_tick_loc = np.round(np.linspace(1, data_dict['scores'].shape[1] - 1, 6)).astype(int)
-                x1_real_values = sx1.inverse_transform(np.array(data_dict['left_names'])[x1_tick_loc].reshape([-1, 1])).ravel()
-                x2_real_values = sx2.inverse_transform(np.array(data_dict['right_names'])[x2_tick_loc].reshape([-1, 1])).ravel()[::-1]
-                
-            if feature_name1 not in categ_variable_list:
+            ax = plt.Subplot(fig, outer[indice]) 
+            cf = ax.imshow(response, interpolation='nearest', aspect='auto', extent=axis_extent)
+            if feature_name1 in categ_variable_list:
+                ax.set_xticks(interact_input1)
+                ax.set_xticklabels(interact_label1)
+            elif np.max([len(str(int(interact_label1[i]) if (interact_label1[i] - int(interact_label1[i])) < 0.001 
+                           else interact_label1[i].round(5))) for i in range(len(interact_label1))]) > 5:
+                ax.xaxis.set_tick_params(rotation=20)
+            if feature_name2 in categ_variable_list:
+                ax.set_yticks(interact_input2)
+                ax.set_yticklabels(interact_label2)
+            elif np.max([len(str(int(interact_label2[i]) if (interact_label2[i] - int(interact_label2[i])) < 0.001 
+                           else interact_label2[i].round(5))) for i in range(len(interact_label2))]) > 5:
+                ax.yaxis.set_tick_params(rotation=20)
 
-                if (np.max(x1_real_values) - np.min(x1_real_values)) < 0.01:
-                    x1_real_values = np.array([np.format_float_scientific(x1_real_values[i], 
-                                      precision=1) for i in range(x1_real_values.shape[0])])
-                elif (np.max(x1_real_values) - np.min(x1_real_values)) < 10:
-                    x1_real_values = np.round(x1_real_values, 2)
-                elif (np.max(x1_real_values) - np.min(x1_real_values)) < 1000:
-                    x1_real_values = np.round(x1_real_values).astype(int)
-                else:
-                    x1_real_values = np.array([np.format_float_scientific(x1_real_values[i],
-                                      precision=1) for i in range(x1_real_values.shape[0])])
-
-            if feature_name2 not in categ_variable_list:
-
-                if (np.max(x2_real_values) - np.min(x2_real_values)) < 0.01:
-                    x2_real_values = np.array([np.format_float_scientific(x2_real_values[i],
-                                      precision=1) for i in range(x2_real_values.shape[0])])
-                elif (np.max(x2_real_values) - np.min(x2_real_values)) < 10:
-                    x2_real_values = np.round(x2_real_values, 2)
-                elif (np.max(x2_real_values) - np.min(x2_real_values)) < 1000:
-                    x2_real_values = np.round(x2_real_values).astype(int)
-                else:
-                    x2_real_values = np.array([np.format_float_scientific(x2_real_values[i],
-                                      precision=1) for i in range(x2_real_values.shape[0])])
-
-            cf = ax1.imshow(response, interpolation='nearest', aspect='auto')
-            plt.xticks(x1_tick_loc, x1_real_values, fontsize=10)
-            plt.yticks(x2_tick_loc, x2_real_values, fontsize=10)
             response_precision = max(int(- np.log10(np.max(response) - np.min(response))) + 2, 0)
-            f.colorbar(cf, ax=ax1, format='%0.' + str(response_precision) + 'f', orientation='horizontal')
-
-        ax1.set_title(feature_name, fontsize=12)
-        idx = idx + 1
-    f.tight_layout()
+            fig.colorbar(cf, ax=ax, format='%0.' + str(response_precision) + 'f')
+            ax.set_title(feature_name, fontsize=12)
+            if np.max([len(str(int(ax.get_xticks()[i]) if (ax.get_xticks()[i] - int(ax.get_xticks()[i])) < 0.001 
+                               else ax.get_xticks()[i].round(5))) for i in range(len(ax.get_xticks()))]) > 5:
+                ax.xaxis.set_tick_params(rotation=20)
+            if np.max([len(str(int(ax.get_yticks()[i]) if (ax.get_yticks()[i] - int(ax.get_yticks()[i])) < 0.001 
+                               else ax.get_yticks()[i].round(5))) for i in range(len(ax.get_yticks()))]) > 5:
+                ax.yaxis.set_tick_params(rotation=20)       
+            fig.add_subplot(ax)
+    fig.tight_layout()
     if max_ids > 0:
-        f.savefig("%s.png" % save_path, bbox_inches='tight', dpi=100)
         if save_eps:
-            f.savefig("%s.eps" % save_path, bbox_inches='tight', dpi=100)
+            fig.savefig("%s.png" % save_path, bbox_inches='tight', dpi=100)
+        if save_png:
+            fig.savefig("%s.eps" % save_path, bbox_inches='tight', dpi=100)
 
 
 def rf(train_x, train_y, test_x, meta_info, task_type="Regression", rand_seed=0):

@@ -125,13 +125,12 @@ def load_wine(path="./data/", test_ratio=0.2, rand_seed=0):
     x, y = data.iloc[:,:-1].values, data.iloc[:,[-1]].values
 
     xx = np.zeros(x.shape)
-    task_type = "Classification"
+    task_type = "Regression"
     for i, (key, item) in enumerate(meta_info.items()):
         if item['type'] == "target":
-            enc = OrdinalEncoder()
-            enc.fit(y)
-            y = enc.transform(y)
-            meta_info[key]["values"] = enc.categories_[0].tolist()
+            sy = MinMaxScaler((-1, 1))
+            y = sy.fit_transform(y)
+            meta_info[key]["scaler"] = sy
         elif item['type'] == "categorical":
             enc = OrdinalEncoder()
             enc.fit(x[:,[i]])
@@ -153,13 +152,12 @@ def load_concrete(path="./data/", test_ratio=0.2, rand_seed=0):
     x, y = data.iloc[:,:-1].values, data.iloc[:,[-1]].values
     
     xx = np.zeros(x.shape)
-    task_type = "Classification"
+    task_type = "Regression"
     for i, (key, item) in enumerate(meta_info.items()):
         if item['type'] == "target":
-            enc = OrdinalEncoder()
-            enc.fit(y)
-            y = enc.transform(y)
-            meta_info[key]["values"] = enc.categories_[0].tolist()
+            sy = MinMaxScaler((-1, 1))
+            y = sy.fit_transform(y)
+            meta_info[key]["scaler"] = sy
         elif item['type'] == "categorical":
             enc = OrdinalEncoder()
             enc.fit(x[:,[i]])
@@ -181,13 +179,12 @@ def load_skill_craft(path="./data/", test_ratio=0.2, rand_seed=0):
     x, y = data.iloc[:,2:].values, data.iloc[:,[1]].values
     
     xx = np.zeros(x.shape)
-    task_type = "Classification"
+    task_type = "Regression"
     for i, (key, item) in enumerate(meta_info.items()):
         if item['type'] == "target":
-            enc = OrdinalEncoder()
-            enc.fit(y)
-            y = enc.transform(y)
-            meta_info[key]["values"] = enc.categories_[0].tolist()
+            sy = MinMaxScaler((-1, 1))
+            y = sy.fit_transform(y)
+            meta_info[key]["scaler"] = sy
         elif item['type'] == "categorical":
             enc = OrdinalEncoder()
             enc.fit(x[:,[i]])
@@ -209,13 +206,12 @@ def load_parkinsons(path="./data/", test_ratio=0.2, rand_seed=0):
     x, y = pd.concat([data.iloc[:,:3], data.iloc[:,5:]], 1).values, data.loc[:,['total_UPDRS']].values
 
     xx = np.zeros(x.shape)
-    task_type = "Classification"
+    task_type = "Regression"
     for i, (key, item) in enumerate(meta_info.items()):
         if item['type'] == "target":
-            enc = OrdinalEncoder()
-            enc.fit(y)
-            y = enc.transform(y)
-            meta_info[key]["values"] = enc.categories_[0].tolist()
+            sy = MinMaxScaler((-1, 1))
+            y = sy.fit_transform(y)
+            meta_info[key]["scaler"] = sy
         elif item['type'] == "categorical":
             enc = OrdinalEncoder()
             enc.fit(x[:,[i]])
@@ -291,7 +287,7 @@ def load_spambase(path="./data/", test_ratio=0.2, rand_seed=0):
 def load_seismic_bumps(path="./data/", test_ratio=0.2, rand_seed=0):
     data = pd.read_csv(path + "seismic_bumps/seismic-bumps.arff")
     meta_info = json.load(open(path + "seismic_bumps/data_types.json"))
-    x, y = data.iloc[:,:-1].values, data.iloc[:,[-1]].values
+    x, y = np.hstack([data.iloc[:,:13].values, data.iloc[:,16:-1].values]), data.iloc[:,[-1]].values
 
     xx = np.zeros(x.shape)
     task_type = "Classification"
