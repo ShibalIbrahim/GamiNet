@@ -88,6 +88,7 @@ def batch_parallel(method, task_group, folder, data_loader, metric, rand_seed):
     return res_stat
 
 
+all_results = []
 for task_name, item in task_list.items():
 
     print(task_name)
@@ -140,10 +141,20 @@ for task_name, item in task_list.items():
     ebm_stat = np.load(folder + 'ebm_stat.npy')
     rulefit_stat = np.load(folder + 'rulefit_stat.npy')
     hiernet_stat = np.load(folder + 'hiernet_stat.npy')
+    mlp_stat = np.load(folder + 'mlp_stat.npy')
     rf_stat = np.load(folder + 'rf_stat.npy')
 
-    stat = pd.DataFrame({"hiernet_stat_mean":hiernet_stat.mean(0), "rf_stat_mean":rf_stat.mean(0), 
-         "mlp_stat_mean":mlp_stat.mean(0), "rulefit_stat_mean":rulefit_stat.mean(0),
-         "ebm_stat_mean":ebm_stat.mean(0), "gaminet_stat_mean":gaminet_stat.mean(0)}, index=["train_metric", "test_metric"]).T
+    results = pd.DataFrame({"HierNet":np.hstack([hiernet_stat.mean(0), hiernet_stat.std(0)]), 
+              "RF":np.hstack([rf_stat.mean(0), rf_stat.std(0)]), 
+              "MLP":np.hstack([mlp_stat.mean(0), mlp_stat.std(0)]), 
+              "RuleFit":np.hstack([rulefit_stat.mean(0), rulefit_stat.std(0)]), 
+              "EBM":np.hstack([ebm_stat.mean(0), ebm_stat.std(0)]), 
+              "GAMINet":np.hstack([gaminet_stat.mean(0), gaminet_stat.std(0)])}, 
+              index=["Train_Mean", "Test_Mean", "Train_Std", "Test_Std"]).round(5)
 
-    stat.round(5).to_csv(folder + task_name + ".csv")
+    results["Task_Name"] = task_name
+    results["Task_Metric"] = metric.__name__
+    results.to_csv(folder + task_name + ".csv")
+    results = results.loc[["Test_Mean"], ["Task_Name", "Task_Metric", "GAMINet", "EBM", "MLP", "RF", "HierNet", "RuleFit"]]
+    all_results.append(results)
+pd.concat(all_results).to_csv("./results/results_summary.csv")

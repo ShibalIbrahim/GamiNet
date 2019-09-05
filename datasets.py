@@ -36,11 +36,10 @@ def data_generator1(datanum, testnum=10000, noise_sigma=1, rand_seed=0):
         y = np.exp(term1 + term2)
         return  y
 
-    y = (2 * x1
-         + 0.2 * np.exp(-4 * x2) 
-         + 3 * (0.5 * x3 + 0.5 * x4)**2 
-         + 2.5 * np.sin(np.pi * (0.7 * x5 + 0.3 * x6))
-         + 5 * cliff(x7, x8)).reshape([-1,1]) + noise_sigma*np.random.normal(0, 1, [datanum + testnum, 1])
+    y = (2 * x1 ** 2
+         + 0.2 * np.exp(-4 * x2)
+         + 2.5 * np.sin(np.pi * x3 * x4)
+         + 5 * cliff(x5, x6)).reshape([-1,1]) + noise_sigma*np.random.normal(0, 1, [datanum + testnum, 1])
 
     task_type = "Regression"
     meta_info = {"X1":{"type":"continuous"},
