@@ -198,7 +198,7 @@ def ebm_visualize(ebm_clf, meta_info, folder="./results/", name="demo", cols_per
                                else ax.get_yticks()[i].round(5))) for i in range(len(ax.get_yticks()))]) > 5:
                 ax.yaxis.set_tick_params(rotation=20)       
             fig.add_subplot(ax)
-    fig.tight_layout()
+
     if max_ids > 0:
         if save_eps:
             fig.savefig("%s.png" % save_path, bbox_inches='tight', dpi=100)
