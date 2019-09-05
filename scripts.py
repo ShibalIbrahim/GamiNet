@@ -51,17 +51,19 @@ def batch_parallel(method, task_group, folder, data_loader, metric, rand_seed):
                     val_metric = np.round(metric(model.val_y, pred_val), 5)
                     tr_y = model.tr_y
                     val_y = model.val_y
-                    pred_train = model.predict(model.tr_x)
+                    pred_train = model.predict(train_x)
                     pred_test = model.predict(test_x)
-                    model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True) 
+                    model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), 
+                                  cols_per_row=4, save_png=True, save_eps=True) 
             if task_type == "Classification":
                 if val_metric < np.round(metric(model.val_y, pred_val), 5):
                     val_metric = np.round(metric(model.val_y, pred_val), 5)
                     tr_y = model.tr_y
                     val_y = model.val_y
-                    pred_train = model.predict(model.tr_x)
+                    pred_train = model.predict(train_x)
                     pred_test = model.predict(test_x)
-                    model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True) 
+                    model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), 
+                                  cols_per_row=4, save_png=True, save_eps=True) 
 
 
     elif method == "EBM":
