@@ -45,13 +45,24 @@ def batch_parallel(method, task_group, folder, data_loader, metric, rand_seed):
                    l1_subnet=10**(-1 - i), l1_inter=10**(-1 - i), verbose=False, val_ratio=0.2, early_stop_thres=50, random_state=rand_seed)
             model.fit(train_x, train_y)
             pred_val = model.predict(model.val_x)
-            if val_metric > np.round(metric(model.val_y, pred_val, sy), 5):
-                val_metric = np.round(metric(model.val_y, pred_val, sy), 5)
-                tr_y = model.tr_y
-                val_y = model.val_y
-                pred_train = model.predict(model.tr_x)
-                pred_test = model.predict(test_x)
-                model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True) 
+            
+            if task_type == "Regression":
+                if val_metric > np.round(metric(model.val_y, pred_val), 5):
+                    val_metric = np.round(metric(model.val_y, pred_val), 5)
+                    tr_y = model.tr_y
+                    val_y = model.val_y
+                    pred_train = model.predict(model.tr_x)
+                    pred_test = model.predict(test_x)
+                    model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True) 
+            if task_type == "Classification":
+                if val_metric < np.round(metric(model.val_y, pred_val), 5):
+                    val_metric = np.round(metric(model.val_y, pred_val), 5)
+                    tr_y = model.tr_y
+                    val_y = model.val_y
+                    pred_train = model.predict(model.tr_x)
+                    pred_test = model.predict(test_x)
+                    model.global_explain(folder + "/gaminet/", "R_" + str(rand_seed + 1).zfill(2), cols_per_row=4, save_png=True, save_eps=True) 
+
 
     elif method == "EBM":
         pred_train, pred_test, ebm_clf = ebm(train_x, train_y, test_x, task_type=task_type, meta_info=meta_info, rand_seed=rand_seed)
@@ -93,11 +104,11 @@ for task_name, item in task_list.items():
     np.save(folder + 'gaminet_stat.npy', gaminet_stat)
     print("GAMINet Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
-#     stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("EBM", task_group, folder,
-#                                            data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
-#     ebm_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
-#     np.save(folder + 'ebm_stat.npy', ebm_stat)
-#     print("EBM Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
+    stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("EBM", task_group, folder,
+                                           data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
+    ebm_stat = pd.concat(stat).loc[:,['train_metric', 'test_metric']].values
+    np.save(folder + 'ebm_stat.npy', ebm_stat)
+    print("EBM Finished!", "Time Cost ", np.round(time.time() - start, 2), " Seconds!")
 
 #     stat = Parallel(n_jobs=num_cores)(delayed(batch_parallel)("Rulefit", task_group, folder,
 #                                            data_loader, metric, rand_seed) for rand_seed in range(repeat_num))
