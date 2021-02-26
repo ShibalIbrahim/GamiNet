@@ -20,10 +20,10 @@
         "tensorflow >=2.0.0"
       ],
       "license": "proprietary",
-      "md5": "f0098704341aacba1895eec6989d553a",
+      "md5": "67b6a7eae80417faeb66c32110372186",
       "name": "gaminet",
-      "sha256": "8dd20d6a2682a6fe82d1cb2c9c2a757ab66eed283708c714c040b6b338019344",
-      "size": 5760308,
+      "sha256": "2a9814b4315de04a564e0958df59da0f75f88c21cdf74ec61b49e0f164655a10",
+      "size": 5754671,
       "subdir": "linux-64",
       "timestamp": 1614353722409,
       "version": "0.1"
