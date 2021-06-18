@@ -14,14 +14,14 @@ class GAMINet(tf.keras.Model):
                  interact_num=20,
                  subnet_arch=[40] * 5,
                  interact_arch=[40] * 5,
-                 lr_bp=0.0001,
+                 lr_bp=[1e-4, 1e-4, 1e-4],
                  batch_size=200,
                  task_type="Regression",
                  activation_func=tf.nn.relu,
                  main_effect_epochs=5000,
                  interaction_epochs=5000,
                  tuning_epochs=500,
-                 early_stop_thres=50,
+                 early_stop_thres=[50, 50, 50],
                  heredity=True,
                  reg_clarity=0.1,
                  loss_threshold=0.01,
@@ -43,6 +43,9 @@ class GAMINet(tf.keras.Model):
         self.main_effect_epochs = main_effect_epochs
         self.interaction_epochs = interaction_epochs
         self.early_stop_thres = early_stop_thres
+        self.early_stop_thres1 = early_stop_thres[0]
+        self.early_stop_thres2 = early_stop_thres[1]
+        self.early_stop_thres3 = early_stop_thres[2]
 
         self.heredity = heredity
         self.reg_clarity = reg_clarity
@@ -105,7 +108,7 @@ class GAMINet(tf.keras.Model):
                                 activation_func=self.activation_func)
         self.output_layer = OutputLayer(input_num=self.input_num, interact_num=self.interact_num)
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr_bp)
+        self.optimizer = tf.keras.optimizers.Adam()
         if self.task_type == "Regression":
             self.loss_fn = tf.keras.losses.MeanSquaredError()
         elif self.task_type == "Classification":
@@ -249,7 +252,7 @@ class GAMINet(tf.keras.Model):
         sorted_index = np.array([])
         componment_scales = [0 for i in range(self.input_num)]
         main_effect_norm = [self.maineffect_blocks.subnets[i].moving_norm.numpy()[0] for i in range(self.input_num)]
-        beta = (self.output_layer.main_effect_weights.numpy() * np.array([main_effect_norm]).reshape([-1, 1]))
+        beta = (self.output_layer.main_effect_weights.numpy() ** 2 * np.array([main_effect_norm]).reshape([-1, 1]))
         componment_scales = (np.abs(beta) / np.sum(np.abs(beta))).reshape([-1])
         sorted_index = np.argsort(componment_scales)[::-1]
         return sorted_index, componment_scales
@@ -260,7 +263,7 @@ class GAMINet(tf.keras.Model):
         componment_scales = [0 for i in range(self.interact_num_added)]
         if self.interact_num_added > 0:
             interaction_norm = [self.interact_blocks.interacts[i].moving_norm.numpy()[0] for i in range(self.interact_num_added)]
-            gamma = (self.output_layer.interaction_weights.numpy()[:self.interact_num_added]
+            gamma = (self.output_layer.interaction_weights.numpy()[:self.interact_num_added] ** 2
                   * np.array([interaction_norm]).reshape([-1, 1]))
             componment_scales = (np.abs(gamma) / np.sum(np.abs(gamma))).reshape([-1])
             sorted_index = np.argsort(componment_scales)[::-1]
@@ -270,11 +273,11 @@ class GAMINet(tf.keras.Model):
 
         componment_scales = [0 for i in range(self.input_num + self.interact_num_added)]
         main_effect_norm = [self.maineffect_blocks.subnets[i].moving_norm.numpy()[0] for i in range(self.input_num)]
-        beta = (self.output_layer.main_effect_weights.numpy() * np.array([main_effect_norm]).reshape([-1, 1])
+        beta = (self.output_layer.main_effect_weights.numpy() ** 2 * np.array([main_effect_norm]).reshape([-1, 1])
              * self.output_layer.main_effect_switcher.numpy())
 
         interaction_norm = [self.interact_blocks.interacts[i].moving_norm.numpy()[0] for i in range(self.interact_num_added)]
-        gamma = (self.output_layer.interaction_weights.numpy()[:self.interact_num_added]
+        gamma = (self.output_layer.interaction_weights.numpy()[:self.interact_num_added] ** 2
               * np.array([interaction_norm]).reshape([-1, 1])
               * self.output_layer.interaction_switcher.numpy()[:self.interact_num_added])
         gamma = np.vstack([gamma, np.zeros((self.interact_num - self.interact_num_added, 1))])
@@ -359,7 +362,7 @@ class GAMINet(tf.keras.Model):
             if self.err_val_main_effect_training[-1] < best_validation:
                 best_validation = self.err_val_main_effect_training[-1]
                 last_improvement = epoch
-            if epoch - last_improvement > self.early_stop_thres:
+            if epoch - last_improvement > self.early_stop_thres1:
                 if self.verbose:
                     print("Early stop at epoch %d, with validation loss: %0.5f" % (epoch + 1, self.err_val_main_effect_training[-1]))
                 break
@@ -461,7 +464,7 @@ class GAMINet(tf.keras.Model):
             if self.err_val_interaction_training[-1] < best_validation:
                 best_validation = self.err_val_interaction_training[-1]
                 last_improvement = epoch
-            if epoch - last_improvement > self.early_stop_thres:
+            if epoch - last_improvement > self.early_stop_thres2:
                 if self.verbose:
                     print("Early stop at epoch %d, with validation loss: %0.5f" % (epoch + 1, self.err_val_interaction_training[-1]))
                 break
@@ -524,7 +527,7 @@ class GAMINet(tf.keras.Model):
             if self.err_val_tuning[-1] < best_validation:
                 best_validation = self.err_val_tuning[-1]
                 last_improvement = epoch
-            if epoch - last_improvement > self.early_stop_thres:
+            if epoch - last_improvement > self.early_stop_thres3:
                 if self.verbose:
                     print("Early stop at epoch %d, with validation loss: %0.5f" % (epoch + 1, self.err_val_tuning[-1]))
                 break
@@ -577,6 +580,8 @@ class GAMINet(tf.keras.Model):
         # step 1: main effects
         if self.verbose:
             print("#" * 10 + "Stage 1: main effect training start." + "#" * 10)
+        
+        self.optimizer.lr.assign(self.lr_bp[0])
         self.fit_main_effect(tr_x, tr_y, val_x, val_y, sample_weight)
         if self.verbose:
             print("#" * 10 + "Stage 1: main effect training stop." + "#" * 10)
@@ -594,11 +599,13 @@ class GAMINet(tf.keras.Model):
         if self.verbose:
             print("#" * 10 + "Stage 2: interaction training start." + "#" * 10)
         self.add_interaction(tr_x, tr_y, val_x, val_y, sample_weight)
+        self.optimizer.lr.assign(self.lr_bp[1])
         self.fit_interaction(tr_x, tr_y, val_x, val_y, sample_weight)
         if self.verbose:
             print("#" * 10 + "Stage 2: interaction training stop." + "#" * 10)
         self.prune_interaction(val_x, val_y, sample_weight)
 
+        self.optimizer.lr.assign(self.lr_bp[2])
         self.fine_tune_all(tr_x, tr_y, val_x, val_y, sample_weight)
         self.active_indice = 1 + np.hstack([-1, self.active_main_effect_index, self.input_num + self.active_interaction_index]).astype(int)
         self.effect_names = np.hstack(["Intercept", np.array(self.feature_list_), [self.feature_list_[self.interaction_list[i][0]] + " x "
@@ -786,7 +793,7 @@ class GAMINet(tf.keras.Model):
             model_dict = pickle.load(input_file)
         for key, item in model_dict.items():
             setattr(self, key, item)
-        self.optimizer.lr = model_dict["lr_bp"]
+        self.optimizer.lr = model_dict["lr_bp"][0]
 
     def save(self, folder="./", name="model"):
 
@@ -825,7 +832,6 @@ class GAMINet(tf.keras.Model):
         model_dict["cfeature_index_list_"] = self.cfeature_index_list_
         model_dict["nfeature_index_list_"] = self.nfeature_index_list_
 
-        # build
         model_dict["interaction_list"] = self.interaction_list
         model_dict["interact_num_added"] = self.interact_num_added 
         model_dict["interaction_status"] = self.interaction_status
