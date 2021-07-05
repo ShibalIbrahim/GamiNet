@@ -90,13 +90,14 @@ train_x, test_x, train_y, test_y, task_type, meta_info, get_metric = data_genera
 
 Run GAMI-Net
 ```python
-## Note the current GAMINet API requires input features being normalized within 0 to 1. 
+## Note the current GAMINet API requires input features being normalized within 0 to 1.
 model = GAMINet(meta_info=meta_info, interact_num=20, 
                 interact_arch=[40] * 5, subnet_arch=[40] * 5, 
                 batch_size=200, task_type=task_type, activation_func=tf.nn.relu, 
                 main_effect_epochs=5000, interaction_epochs=5000, tuning_epochs=500, 
                 lr_bp=[0.0001, 0.0001, 0.0001], early_stop_thres=[50, 50, 50],
                 heredity=True, loss_threshold=0.01, reg_clarity=1,
+                mono_increasing_list=[], mono_decreasing_list=[], ## the indices list of features
                 verbose=False, val_ratio=0.2, random_state=random_state)
 
 model.fit(train_x, train_y)
