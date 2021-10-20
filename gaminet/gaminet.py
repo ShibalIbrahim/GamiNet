@@ -28,7 +28,10 @@ class GAMINet(tf.keras.Model):
                  val_ratio=0.2,
                  mono_increasing_list=None,
                  mono_decreasing_list=None,
-                 lattice_size=10,
+                 convex_list=None,
+                 concave_list=None,
+                 lattice_size=2,
+                 include_interaction_list=[],
                  verbose=False,
                  random_state=0):
 
@@ -57,6 +60,9 @@ class GAMINet(tf.keras.Model):
         self.mono_increasing_list = [] if mono_increasing_list is None else mono_increasing_list
         self.mono_decreasing_list = [] if mono_decreasing_list is None else mono_decreasing_list
         self.mono_list = self.mono_increasing_list + self.mono_decreasing_list
+        self.convex_list = [] if convex_list is None else convex_list
+        self.concave_list = [] if concave_list is None else concave_list
+        self.con_list = self.convex_list + self.concave_list
         self.lattice_size = lattice_size
         
         self.verbose = verbose
@@ -100,7 +106,8 @@ class GAMINet(tf.keras.Model):
         self.interaction_status = False
         self.input_num = self.nfeature_num_ + self.cfeature_num_
         self.max_interact_num = int(round(self.input_num * (self.input_num - 1) / 2))
-        self.interact_num = min(interact_num, self.max_interact_num)
+        self.include_interaction_list = list(set(include_interaction_list))
+        self.interact_num = min(interact_num + len(self.include_interaction_list), self.max_interact_num)
 
         self.maineffect_blocks = MainEffectBlock(feature_list=self.feature_list_,
                                  dummy_values=self.dummy_values_,
@@ -108,7 +115,10 @@ class GAMINet(tf.keras.Model):
                                  cfeature_index_list=self.cfeature_index_list_,
                                  subnet_arch=self.subnet_arch,
                                  activation_func=self.activation_func,
-                                 mono_list=self.mono_list,
+                                 mono_increasing_list=self.mono_increasing_list,
+                                 mono_decreasing_list=self.mono_decreasing_list,
+                                 convex_list=self.convex_list,
+                                 concave_list=self.concave_list,
                                  lattice_size=self.lattice_size)
         self.interact_blocks = InteractionBlock(interact_num=self.interact_num,
                                 feature_list=self.feature_list_,
@@ -116,12 +126,17 @@ class GAMINet(tf.keras.Model):
                                 dummy_values=self.dummy_values_,
                                 interact_arch=self.interact_arch,
                                 activation_func=self.activation_func,
-                                mono_list=self.mono_list,
+                                 mono_increasing_list=self.mono_increasing_list,
+                                 mono_decreasing_list=self.mono_decreasing_list,
+                                 convex_list=self.convex_list,
+                                 concave_list=self.concave_list,
                                 lattice_size=self.lattice_size)
         self.output_layer = OutputLayer(input_num=self.input_num,
                               interact_num=self.interact_num,
                               mono_increasing_list=self.mono_increasing_list,
-                              mono_decreasing_list=self.mono_decreasing_list)
+                              mono_decreasing_list=self.mono_decreasing_list,
+                              convex_list=self.convex_list,
+                              concave_list=self.concave_list)
 
         self.optimizer = tf.keras.optimizers.Adam()
         if self.task_type == "Regression":
@@ -137,15 +152,15 @@ class GAMINet(tf.keras.Model):
         self.maineffect_outputs = self.maineffect_blocks(inputs, sample_weight, training=main_effect_training)
         if self.interaction_status:
             self.interact_outputs = self.interact_blocks(inputs, sample_weight, training=interaction_training)
+            main_weights = tf.multiply(self.output_layer.main_effect_switcher, self.output_layer.main_effect_weights)
+            interaction_weights = tf.multiply(self.output_layer.interaction_switcher, self.output_layer.interaction_weights)
             for i, (k1, k2) in enumerate(self.interaction_list):
-                main_weights = tf.multiply(self.output_layer.main_effect_switcher, self.output_layer.main_effect_weights)
-                interaction_weights = tf.multiply(self.output_layer.interaction_switcher, self.output_layer.interaction_weights)
                 a1 = tf.multiply(tf.gather(self.maineffect_outputs, [k1], axis=1), tf.gather(main_weights, [k1], axis=0))
                 a2 = tf.multiply(tf.gather(self.maineffect_outputs, [k2], axis=1), tf.gather(main_weights, [k2], axis=0))
                 b = tf.multiply(tf.gather(self.interact_outputs, [i], axis=1), tf.gather(interaction_weights, [i], axis=0))
                 if sample_weight is not None:
-                    self.clarity_loss += tf.abs(tf.reduce_mean(tf.multiply(tf.multiply(a1, b), sample_weight)))
-                    self.clarity_loss += tf.abs(tf.reduce_mean(tf.multiply(tf.multiply(a2, b), sample_weight)))
+                    self.clarity_loss += tf.abs(tf.reduce_mean(tf.multiply(tf.multiply(a1, b), tf.reshape(sample_weight, (-1, 1)))))
+                    self.clarity_loss += tf.abs(tf.reduce_mean(tf.multiply(tf.multiply(a2, b), tf.reshape(sample_weight, (-1, 1)))))
                 else:
                     self.clarity_loss += tf.abs(tf.reduce_mean(tf.multiply(a1, b)))
                     self.clarity_loss += tf.abs(tf.reduce_mean(tf.multiply(a2, b)))
@@ -328,7 +343,7 @@ class GAMINet(tf.keras.Model):
         main_weights = tf.multiply(self.output_layer.main_effect_switcher, self.output_layer.main_effect_weights)
         for idx, subnet in enumerate(self.maineffect_blocks.subnets):
             if idx in self.nfeature_index_list_:
-                if idx in self.mono_list:
+                if idx in self.mono_list + self.con_list:
                     subnet_bias = subnet.lattice_layer_bias - subnet.moving_mean
                     subnet.lattice_layer_bias.assign(subnet_bias)
                 else:
@@ -349,7 +364,7 @@ class GAMINet(tf.keras.Model):
             if idx >= len(self.interaction_list):
                 break
 
-            if (interact.interaction[0] in self.mono_list) or (interact.interaction[1] in self.mono_list):
+            if (interact.interaction[0] in self.mono_list + self.con_list) or (interact.interaction[1] in self.mono_list + self.con_list):
                 interact_bias = interact.lattice_layer_bias - interact.moving_mean
                 interact.lattice_layer_bias.assign(interact_bias)
             else:
@@ -376,7 +391,7 @@ class GAMINet(tf.keras.Model):
                 batch_yy = tr_y[offset:(offset + self.batch_size)]
                 batch_sw = tr_sw[offset:(offset + self.batch_size)]
                 self.train_main_effect(tf.cast(batch_xx, tf.float32), tf.cast(batch_yy, tf.float32), tf.cast(batch_sw, tf.float32))
-            
+
             self.err_train_main_effect_training.append(self.evaluate(tr_x, tr_y, tr_sw,
                                                  main_effect_training=False, interaction_training=False))
             self.err_val_main_effect_training.append(self.evaluate(val_x, val_y, sample_weight[self.val_idx],
@@ -411,11 +426,12 @@ class GAMINet(tf.keras.Model):
             self.main_effect_val_loss.append(val_loss)
 
         best_idx = np.argmin(self.main_effect_val_loss)
-        best_loss = np.min(self.main_effect_val_loss)
-        if best_loss > 0:
-            if np.sum((self.main_effect_val_loss / best_loss - 1) < self.loss_threshold) > 0:
-                best_idx = np.where((self.main_effect_val_loss / best_loss - 1) < self.loss_threshold)[0][0]
-            
+        loss_best = np.min(self.main_effect_val_loss)
+        loss_range = np.max(self.main_effect_val_loss) - np.min(self.main_effect_val_loss)
+        if loss_range > 0:
+            if np.sum(((self.main_effect_val_loss - loss_best) / loss_range) < self.loss_threshold) > 0:
+                best_idx = np.where(((self.main_effect_val_loss - loss_best) / loss_range) < self.loss_threshold)[0][0]
+
         self.active_main_effect_index = sorted_index[:best_idx]
         main_effect_switcher = np.zeros((self.input_num, 1))
         main_effect_switcher[self.active_main_effect_index] = 1
@@ -452,7 +468,7 @@ class GAMINet(tf.keras.Model):
                           task_type=self.task_type,
                           active_main_effect_index=np.arange(self.input_num))
 
-        self.interaction_list = interaction_list_all[:self.interact_num]
+        self.interaction_list = list(set(self.include_interaction_list + interaction_list_all[:self.interact_num]))
         self.interact_num_added = len(self.interaction_list)
         self.interact_blocks.set_interaction_list(self.interaction_list)
         self.output_layer.set_interaction_list(self.interaction_list)
@@ -511,11 +527,12 @@ class GAMINet(tf.keras.Model):
             self.interaction_val_loss.append(val_loss)
 
         best_idx = np.argmin(self.interaction_val_loss)
-        best_loss = np.min(self.interaction_val_loss)
-        if best_loss > 0:
-            if np.sum((self.interaction_val_loss / best_loss - 1) < self.loss_threshold) > 0:
-                best_idx = np.where((self.interaction_val_loss / best_loss - 1) < self.loss_threshold)[0][0]
-            
+        loss_best = np.min(self.interaction_val_loss)
+        loss_range = np.max(self.interaction_val_loss) - np.min(self.interaction_val_loss)
+        if loss_range > 0:
+            if np.sum(((self.interaction_val_loss - loss_best) / loss_range) < self.loss_threshold) > 0:
+                best_idx = np.where(((self.interaction_val_loss - loss_best) / loss_range) < self.loss_threshold)[0][0]
+
         self.active_interaction_index = sorted_index[:best_idx]
         interaction_switcher = np.zeros((self.interact_num, 1))
         interaction_switcher[self.active_interaction_index] = 1
@@ -610,13 +627,13 @@ class GAMINet(tf.keras.Model):
         if self.verbose:
             print("#" * 10 + "Stage 1: main effect training stop." + "#" * 10)
         self.prune_main_effect(val_x, val_y, sample_weight)
-        if len(self.active_main_effect_index) == 0:
+        if (len(self.active_main_effect_index) == 0) and self.heredity:
             if self.verbose:
                 print("#" * 10 + "No main effect is selected, training stop." + "#" * 10)
             return
 
         # step2: interaction
-        if self.interact_num == 0:
+        if (self.interact_num == 0) and len(self.include_interaction_list) == 0:
             if self.verbose:
                 print("#" * 10 + "Max interaction is specified to zero, training stop." + "#" * 10)
             return
