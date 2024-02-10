@@ -586,7 +586,7 @@ class GAMINet(tf.keras.Model):
         self.center_main_effects()
         self.center_interactions()
 
-    def init_fit(self, train_x, train_y, sample_weight=None):
+    def init_fit(self, train_x, train_y, sample_weight=None, valid_x=None, valid_y=None, valid_sample_weight=None):
 
         # initialization
         self.data_dict_density = {}
@@ -607,25 +607,50 @@ class GAMINet(tf.keras.Model):
         n_samples = train_x.shape[0]
         indices = np.arange(n_samples)
         if self.task_type == "Regression":
-            tr_x, val_x, tr_y, val_y, tr_idx, val_idx = train_test_split(train_x, train_y, indices, test_size=self.val_ratio,
+            if valid_x is None:
+                tr_x, val_x, tr_y, val_y, tr_idx, val_idx = train_test_split(train_x, train_y, indices, test_size=self.val_ratio,
                                           random_state=self.random_state)
+            else:
+                tr_x = train_x
+                val_x = valid_x
+                tr_y = train_y
+                val_y = valid_y
+                tr_idx = np.arange(train_x.shape[0])
+                val_idx = np.arange(train_x.shape[0],train_x.shape[0]+valid_x.shape[0])
+            print(tr_idx)
+            print(val_idx)
         elif self.task_type == "Classification":
-            tr_x, val_x, tr_y, val_y, tr_idx, val_idx = train_test_split(train_x, train_y, indices, test_size=self.val_ratio,
+            if valid_x is None:            
+                tr_x, val_x, tr_y, val_y, tr_idx, val_idx = train_test_split(train_x, train_y, indices, test_size=self.val_ratio,
                                       stratify=train_y, random_state=self.random_state)
+            else:
+                tr_x = train_x
+                val_x = valid_x
+                tr_y = train_y
+                val_y = valid_y
+                tr_idx = np.arange(train_x.shape[0])
+                val_idx = np.arange(train_x.shape[0],train_x.shape[0]+valid_x.shape[0])
         self.tr_idx = tr_idx
         self.val_idx = val_idx
         self.estimate_density(tr_x, sample_weight[self.tr_idx])
         return tr_x, val_x, tr_y, val_y
 
-    def fit(self, train_x, train_y, sample_weight=None):
-
-        n_samples = train_x.shape[0]
+    def fit(self, train_x, train_y, sample_weight=None, valid_x=None, valid_y=None, valid_sample_weight=None):
+        
+        if valid_x is None:
+            n_samples = train_x.shape[0]
+        else:
+            n_samples = train_x.shape[0] + valid_x.shape[0]
+            
         if sample_weight is None:
             sample_weight = np.ones(n_samples)
         else:
             sample_weight = n_samples * sample_weight.ravel() / np.sum(sample_weight)
-
-        tr_x, val_x, tr_y, val_y = self.init_fit(train_x, train_y, sample_weight)
+        
+        if valid_x is None:
+            tr_x, val_x, tr_y, val_y = self.init_fit(train_x, train_y, sample_weight)
+        else:
+            tr_x, val_x, tr_y, val_y = self.init_fit(train_x, train_y, sample_weight, valid_x=valid_x, valid_y=valid_y, valid_sample_weight=valid_sample_weight)
         if self.verbose:
             print("#" * 20 + "GAMI-Net training start." + "#" * 20)
         # step 1: main effects
